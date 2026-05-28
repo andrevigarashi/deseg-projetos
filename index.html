@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AS IS de Projetos da DESEG</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --fg:   #005CA8;
+      --dark: #004077;
+      --lt:   #A4CFED;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: #fff;
+      color: #000;
+      font-size: 1.05rem;
+    }
+
+    /* ── Top bar ── */
+    .page-topbar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--dark) 0%, var(--fg) 55%, var(--lt) 100%);
+    }
+
+    /* ── Layout ── */
+    .layout-wrapper {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,64,119,.07);
+      padding: 1.5rem 0;
+      background: #f4f8fc;
+    }
+    .sidebar-heading {
+      font-size: .68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--fg);
+      opacity: .6;
+      padding: 0 1.25rem .9rem;
+      border-bottom: 1px solid rgba(0,92,168,.12);
+      margin-bottom: .5rem;
+    }
+    .sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      color: #555;
+      padding: .6rem 1.25rem;
+      border-left: 3px solid transparent;
+      font-size: .88rem;
+      transition: all .2s;
+      border-radius: 0 2rem 2rem 0;
+      margin-right: .75rem;
+    }
+    .sidebar .nav-link .material-icons { font-size: 1rem; color: #aaa; transition: color .2s; }
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: var(--fg);
+      border-left-color: var(--fg);
+      background: rgba(0,92,168,.10);
+    }
+    .sidebar .nav-link:hover .material-icons,
+    .sidebar .nav-link.active .material-icons { color: var(--fg); }
+    .sidebar .nav-link.active { font-weight: 600; }
+
+    /* ── Mobile nav ── */
+    .mobile-nav {
+      background: #f4f8fc;
+      border-bottom: 2px solid var(--lt);
+      padding: .4rem 1rem;
+    }
+    .mobile-nav .nav-link {
+      color: var(--fg);
+      font-size: .82rem;
+      padding: .3rem .6rem;
+    }
+
+    /* ── Main column ── */
+    .main-column {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ── Main content ── */
+    .main-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 2rem 3rem;
+    }
+    @media (max-width: 767.98px) {
+      .main-content { padding: 1rem 1rem 2rem; }
+    }
+
+    /* ── Identity header ── */
+    .identity-block {
+      border-bottom: 2px solid var(--lt) !important;
+      padding-bottom: 1.75rem;
+      margin-bottom: 2.5rem;
+      animation: fadeUp .4s ease both;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      color: var(--fg);
+      border-bottom: 2px solid var(--lt);
+      padding-bottom: .5rem;
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .section-title .material-icons { font-size: 1.3rem; }
+
+    /* ── Accordion ── */
+    .accordion-item {
+      border: 1px solid #dce6f0 !important;
+      border-radius: 2em !important;
+      overflow: hidden;
+      margin-bottom: .75rem;
+      transition: box-shadow .2s;
+    }
+    .accordion-item:hover {
+      box-shadow: 0 2px 14px rgba(0,92,168,.10);
+    }
+    .accordion-button {
+      color: var(--fg);
+      font-weight: 600;
+      background: #fff;
+    }
+    .accordion-button:not(.collapsed) {
+      background: linear-gradient(135deg, rgba(0,92,168,.06) 0%, #fff 70%);
+      color: var(--dark);
+      box-shadow: none;
+    }
+    .accordion-button:focus { box-shadow: 0 0 0 .15rem rgba(0,92,168,.25); }
+
+    /* ── Badges ── */
+    .badge-exec   { background: #E1FFE2; color: #158A19; }
+    .badge-done   { background: #E6F0FC; color: #0058AF; }
+    .badge-pend   { background: #FEF3C7; color: #D97706; }
+    .badge-paused { background: #F3E8FF; color: #7C3AED; }
+    .badge-ongoing{ background: #FFF0E6; color: #C2410C; }
+    .badge-backlog{ background: #F1F5F9; color: #475569; }
+    .badge-notstart{ background: #FEF2F2; color: #B91C1C; }
+    .badge-review { background: #ECFEFF; color: #0E7490; }
+    .badge-homol  { background: #FFF7ED; color: #C2410C; }
+    .badge-tag    { background: var(--lt); color: var(--dark); font-size: .78rem; }
+
+    /* ── Two-column bullets ── */
+    .two-col-bullets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 600px) {
+      .two-col-bullets { grid-template-columns: 1fr; }
+    }
+    .bullet-col {
+      background: #f8fbff;
+      border: 1px solid #dce6f0;
+      border-radius: .75rem;
+      padding: .85rem 1rem;
+    }
+    .bullet-col-title {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--fg);
+      margin-bottom: .5rem;
+    }
+    .bullet-col ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .bullet-col ul li {
+      padding: .2rem 0 .2rem 1.3rem;
+      position: relative;
+      font-size: .93rem;
+      line-height: 1.45;
+    }
+    .bullet-col ul li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--fg);
+      font-size: .85rem;
+    }
+    .bullet-col-risk ul li::before {
+      color: #005CA8;
+    }
+
+    /* ── Doc links ── */
+    .doc-link {
+      border: 1px solid var(--lt);
+      border-radius: .75rem;
+      padding: .5rem .9rem;
+      transition: transform .15s, box-shadow .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      text-decoration: none;
+      color: var(--dark);
+      font-size: .9rem;
+      font-weight: 600;
+      margin-bottom: .4rem;
+    }
+    .doc-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,92,168,.10);
+      color: var(--fg);
+    }
+    .doc-link .material-icons { color: var(--fg); font-size: 1.05rem; }
+
+    /* ── Info labels ── */
+    .lbl {
+      font-size: .78rem;
+      color: #666;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    /* ── Scope list ── */
+    .scope-list li {
+      margin-bottom: .45rem;
+      font-size: 1rem;
+    }
+
+    /* ── Tags row ── */
+    .tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+      margin-bottom: 1rem;
+    }
+    .tag-item {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .28rem .75rem;
+      border-radius: 2em;
+      font-size: .78rem;
+      font-weight: 600;
+      background: var(--lt);
+      color: var(--dark);
+    }
+    .tag-item .material-icons { font-size: .85rem; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 2px solid var(--lt);
+      background: #f4f8fc;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    section { animation: fadeUp .5s ease both; }
+  </style>
+</head>
+<body>
+
+<div class="page-topbar"></div>
+
+<!-- ═══ MOBILE NAV ═══ -->
+<nav class="mobile-nav d-flex d-md-none flex-wrap gap-1">
+  <a class="nav-link" href="#notas">
+    <span class="material-icons align-middle" style="font-size:.9rem">area_chart</span> Notas Técnicas</a>
+  <a class="nav-link" href="#cadernos">
+    <span class="material-icons align-middle" style="font-size:.9rem">science</span> Cadernos</a>
+  <a class="nav-link" href="#boletins">
+    <span class="material-icons align-middle" style="font-size:.9rem">dashboard</span> Boletins</a>
+  <a class="nav-link" href="#eventos">
+    <span class="material-icons align-middle" style="font-size:.9rem">diversity_3</span> Eventos</a>
+  <a class="nav-link" href="#misc">
+    <span class="material-icons align-middle" style="font-size:.9rem">category</span> Misc.</a>
+  <a class="nav-link" href="#backlog">
+    <span class="material-icons align-middle" style="font-size:.9rem">pending_actions</span> Backlog</a>
+</nav>
+
+<!-- ═══ LAYOUT WRAPPER ═══ -->
+<div class="layout-wrapper">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar d-none d-md-flex flex-column">
+    <p class="sidebar-heading">Navegação</p>
+    <nav>
+      <a class="nav-link" href="#notas">
+        <span class="material-icons">area_chart</span> Notas Técnicas</a>
+      <a class="nav-link" href="#cadernos">
+        <span class="material-icons">science</span> Cadernos Técnicos</a>
+      <a class="nav-link" href="#boletins">
+        <span class="material-icons">dashboard</span> Boletins Técnicos</a>
+      <a class="nav-link" href="#eventos">
+        <span class="material-icons">diversity_3</span> Trabalhos p/ Eventos</a>
+      <a class="nav-link" href="#misc">
+        <span class="material-icons">category</span> Miscellaneous</a>
+      <a class="nav-link" href="#backlog">
+        <span class="material-icons">pending_actions</span> Backlog</a>
+    </nav>
+  </aside>
+
+  <!-- ── MAIN COLUMN ── -->
+  <div class="main-column">
+  <main class="main-content">
+
+    <!-- ═══ IDENTIDADE ═══ -->
+    <div class="identity-block">
+      <img src="https://www.detran.sp.gov.br/702a783633529610cd8381ac4f5c7b5b.iix"
+           alt="Detran-SP" height="48" class="d-block mb-3">
+      <h1 class="h3 fw-bold mb-1" style="color:var(--dark)">AS IS de Projetos da DESEG</h1>
+      <p class="mb-0 small text-muted">Status dos andamentos dos projetos da Divisão de Estudos para Segurança no Trânsito destinado a auxiliar a navegação dos substitutos no período de férias do chefe da divisão.</p>
+      <p class="mb-0 small text-muted">Atualizado em 28/05</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         NOTAS TÉCNICAS
+    ════════════════════════════════════════ -->
+    <section id="notas" class="mb-5">
+      <h2 class="section-title d-flex align-items-center gap-2">
+        <span class="material-icons">area_chart</span> Notas Técnicas
+      </h2>
+      <p class="mb-4">Estudos em formato html com o propósito de empregar métodos de análises de dados com apresentação de resultados, destinados a ampla publicação.</p>
+
+      <div class="accordion" id="accNotas">
+
+        <!-- NT01 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#nt01">
+              <span class="material-icons me-2">line_axis</span>
+              <span class="flex-grow-1">Nota Técnica 01 – Análise de Tendência da Sinistralidade em Municípios do Estado de São Paulo</span>
+            </button>
+          </h2>
+          <div id="nt01" class="accordion-collapse collapse" data-bs-parent="#accNotas">
+            <div class="accordion-body">
+              <p class="mb-3">Nota Técnica publicada em julho de 2025, cujo objetivo é identificar a tendência da sinistralidade no trânsito em municípios do estado de São Paulo, com base em dados do Infosiga.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Não</span>
+                <span class="tag-item badge-exec"><span class="material-icons">check_circle</span> Status: Finalizado</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: -</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://detran-sp.github.io/tendencia_municipios/" target="_blank" class="doc-link">
+                    <span class="material-icons">open_in_new</span> Nota Técnica Publicada
+                  </a>
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.03%20Notas%20t%C3%A9cnicas/NT01%20Tend%C3%AAncia%20munic%C3%ADpios?csf=1&web=1&e=ndQLaM" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Corrigir os mapas de pedestres</li>
+                    <li>Atualizar a NT01 para contemplar os dados do ano de 2025</li>
+                    <li>Adequar ao novo modelo de formatação das Notas Técnicas</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>A atualização da NT02 foi conduzida sem conhecimento prévio da presidência, sendo aconselhável consultá-la antes de iniciar a atividade. Em caso de não ter aprovação, avaliar fazer apenas a correção e adequação ao novo modelo.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NT02 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#nt02">
+              <span class="material-icons me-2">attach_money</span>
+              <span class="flex-grow-1">Nota Técnica 02 – Estimativa do custo dos sinistros de trânsito no estado de São Paulo - Metodologia de cálculo</span>
+            </button>
+          </h2>
+          <div id="nt02" class="accordion-collapse collapse" data-bs-parent="#accNotas">
+            <div class="accordion-body">
+              <p class="mb-3">Nota Técnica publicada em setembro de 2025 cujo objetivo é apresentar um método de cálculo da estimativa dos custos de sinistros de trânsito no Estado de São Paulo.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Sim</span>
+                <span class="tag-item badge-review"><span class="material-icons">rate_review</span> Status: Revisão</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: SEP</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://detran-sp.github.io/custos_sinistros_sp/" target="_blank" class="doc-link">
+                    <span class="material-icons">open_in_new</span> Nota Técnica Publicada
+                  </a>
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.03%20Notas%20t%C3%A9cnicas/NT02%20Custos%20sinistros?csf=1&web=1&e=wI1Buk" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Voltar a apresentação dos dados para as tabelas antigas, descartando as análises temporais, a pedido da Presidência</li>
+                    <li>Adequar o texto para as tabelas</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>O valor total de 2025 é inferior ao de 2024, em grande parte por conta da queda dos sinistros não fatais, de forma que veicular esse valor de forma isolada, sem alinhamento devido, pode passar uma mensagem equivocada.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NT03 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#nt03">
+              <span class="material-icons me-2">health_and_safety</span>
+              <span class="flex-grow-1">Nota Técnica 03 - Análise exploratória dos dados do sistema de saúde sob a ótica da segurança viária</span>
+            </button>
+          </h2>
+          <div id="nt03" class="accordion-collapse collapse" data-bs-parent="#accNotas">
+            <div class="accordion-body">
+              <p class="mb-3">Nota Técnica ainda não publicada, cujo objetivo é analisar os dados abertos do Tabnet/DATASUS, com vistas a caracterizar os efeitos da sinistralidade viária sobre o sistema de saúde. O Boletim Técnico 03 já foi produzido como alternativa resumida da NT03.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Sim</span>
+                <span class="tag-item badge-homol"><span class="material-icons">verified</span> Status: Homologação</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV e SEP</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.03%20Notas%20t%C3%A9cnicas/NT03%20Sa%C3%BAde%20e%20sinistralidade?csf=1&web=1&e=foRutX" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                  <a href="https://andrevigarashi.github.io/nt03-dev" target="_blank" class="doc-link">
+                    <span class="material-icons">open_in_new</span> Apêndice III
+                  </a>
+                  <a href="https://github.com/Detran-SP/nt_saude_sinistros" target="_blank" class="doc-link">
+                    <span class="material-icons">code</span> Repositório do GitHub
+                  </a>
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.06%20Pesquisas/Boletins%20t%C3%A9cnicos/BT03%20S%C3%ADntese%20da%20NT03?csf=1&web=1&e=GVHPhU" target="_blank" class="doc-link">
+                    <span class="material-icons">description</span> Boletim Técnico
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Alinhamento com a SES</li>
+                    <li>Formatação da Nota Técnica em html</li>
+                    <li>Hospedar o Apêndice III no repositório final da NT03, com o Detran-SP como proprietário</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Sensibilidade com a SES</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /accordion notas -->
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         CADERNOS TÉCNICOS
+    ════════════════════════════════════════ -->
+    <section id="cadernos" class="mb-5">
+      <h2 class="section-title d-flex align-items-center gap-2">
+        <span class="material-icons">science</span> Cadernos Técnicos
+      </h2>
+      <p class="mb-4">Publicações diagramadas com o propósito de apresentar métodos inéditos, com inclusão de conteúdos adicionais informativos, sem apresentação de resultados numéricos, destinados a priori para circulação interna.</p>
+
+      <div class="accordion" id="accCadernos">
+
+        <!-- CT01 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#ct01">
+              <span class="material-icons me-2">radar</span>
+              <span class="flex-grow-1">Caderno Técnico 01 – Análise de Dados para Operações de Fiscalização</span>
+            </button>
+          </h2>
+          <div id="ct01" class="accordion-collapse collapse" data-bs-parent="#accCadernos">
+            <div class="accordion-body">
+              <p class="mb-3">Caderno Técnico finalizado, mas ainda não publicizado devido à pendência do alinhamento com a DFT, cujo objetivo é consolidar e organizar os procedimentos a serem adotados para a produção de evidências para o monitoramento e planejamento das operações de fiscalização de trânsito no estado de São Paulo.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Sim</span>
+                <span class="tag-item badge-homol"><span class="material-icons">verified</span> Status: Homologação</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV e SEP</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.07%20Fiscaliza%C3%A7%C3%A3o/02.07.05%20Caderno%20T%C3%A9cnico?csf=1&web=1&e=i4INt8" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Alinhamento com a DFT</li>
+                    <li>Consolidação da v0.6 (inclusão da camada de estabelecimentos)</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Validação do material pela DFT</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CT02 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#ct02">
+              <span class="material-icons me-2">personal_injury</span>
+              <span class="flex-grow-1">Caderno Técnico 02 – Métodos de Classificação de Severidade de Sinistros de Trânsito</span>
+            </button>
+          </h2>
+          <div id="ct02" class="accordion-collapse collapse" data-bs-parent="#accCadernos">
+            <div class="accordion-body">
+              <p class="mb-3">Caderno Técnico finalizado, mas ainda não publicizado, cujo objetivo é apresentar um método de classificação de severidade para compor o aplicativo Registro de Sinistros de Trânsito (RST).</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Sim</span>
+                <span class="tag-item badge-homol"><span class="material-icons">verified</span> Status: Homologação</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.06%20Pesquisas/M%C3%A9todos%20de%20classifica%C3%A7%C3%A3o%20de%20v%C3%ADtimas?csf=1&web=1&e=xXZi6L" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Revisão do CT02 pela COST, CGSV e DSV</li>
+                    <li>Aprovação da PR</li>
+                    <li>Implementação do método no RST conforme aprovação da PR</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Necessidade de argumentar com a PR a relevância da topografia de lesões</li>
+                    <li>Alinhamento com a equipe de desenvolvimento do RST para implementação da topografia de lesões</li>
+                    <li>Desejável que as considerações das classes de severidade estejam já nas versões de teste do aplicativo.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /accordion cadernos -->
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         BOLETINS TÉCNICOS
+    ════════════════════════════════════════ -->
+    <section id="boletins" class="mb-5">
+      <h2 class="section-title d-flex align-items-center gap-2">
+        <span class="material-icons">dashboard</span> Boletins Técnicos
+      </h2>
+      <p class="mb-4">Produtos em formato de OnePager destinados a veiculação rápida e sintética de informações, destinados a priori para veiculação interna.</p>
+
+      <div class="accordion" id="accBoletins">
+
+        <!-- BT01 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#bt01">
+              <span class="material-icons me-2">speed</span>
+              <span class="flex-grow-1">Boletim Técnico 01 – Gestão de Velocidade</span>
+            </button>
+          </h2>
+          <div id="bt01" class="accordion-collapse collapse" data-bs-parent="#accBoletins">
+            <div class="accordion-body">
+              <p class="mb-3">Boletim Técnico finalizado e publicizado cujo objetivo é elencar principais informações a respeito da gestão da velocidade, de forma concisa e de fácil consumo para subsidiar discussões a respeito do tema.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Não</span>
+                <span class="tag-item badge-exec"><span class="material-icons">check_circle</span> Status: Finalizado</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV e SEP</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.06%20Pesquisas/Boletins%20t%C3%A9cnicos/BT01%20Velocidade?csf=1&web=1&e=XtPB9H" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>DSV solicitou que, quando houvesse tempo hábil, o BT01 fosse transformado em uma apresentação para as superintendências disseminarem o conteúdo.</li>
+                    <li>DSV indicou que a EPT estaria fazendo um "cardápio de palestras" e que o BT01 e a apresentação poderiam estar incluídos nele (CGSV está ciente).</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Não há riscos identificados</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BT02 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#bt02">
+              <span class="material-icons me-2">car_crash</span>
+              <span class="flex-grow-1">Boletim Técnico 02 – Bases de Dados de Sinistros</span>
+            </button>
+          </h2>
+          <div id="bt02" class="accordion-collapse collapse" data-bs-parent="#accBoletins">
+            <div class="accordion-body">
+              <p class="mb-3">Boletim Técnico finalizado e publicizado cujo objetivo é mapear, sistematizar e comparar como diferentes organizações no Brasil e no exterior estruturam, disponibilizam e transferem dados públicos de segurança viária.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Sim</span>
+                <span class="tag-item badge-exec"><span class="material-icons">check_circle</span> Status: Finalizado</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.06%20Pesquisas/Boletins%20t%C3%A9cnicos/BT02%20Tecnologias%20informacionais%20de%20sinistros%20de%20tr%C3%A2nsito%E2%80%8B?csf=1&web=1&e=RJpHM5" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Adequação do BT02 para um artigo a ser submetido no 40º Congresso da ANPET</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Não há riscos identificados</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BT03 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#bt03">
+              <span class="material-icons me-2">health_and_safety</span>
+              <span class="flex-grow-1">Boletim Técnico 03 – Dados da Saúde</span>
+            </button>
+          </h2>
+          <div id="bt03" class="accordion-collapse collapse" data-bs-parent="#accBoletins">
+            <div class="accordion-body">
+              <p class="mb-3">Boletim Técnico finalizado, mas ainda não publicizado, cujo objetivo é sintetizar o conteúdo da NT03.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Não</span>
+                <span class="tag-item badge-exec"><span class="material-icons">check_circle</span> Status: Finalizado</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.06%20Pesquisas/Boletins%20t%C3%A9cnicos/BT03%20S%C3%ADntese%20da%20NT03?csf=1&web=1&e=2XVlns" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Compartilhar o BT03 com DEST, DIST, CGSV e DSV</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Sensibilidade com a SES</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /accordion boletins -->
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         TRABALHOS PARA EVENTOS
+    ════════════════════════════════════════ -->
+    <section id="eventos" class="mb-5">
+      <h2 class="section-title d-flex align-items-center gap-2">
+        <span class="material-icons">diversity_3</span> Trabalhos para Eventos
+      </h2>
+      <p class="mb-4">Adaptação de produções da DESEG para submissão em eventos técnico-científicos.</p>
+
+      <div class="accordion" id="accEventos">
+
+        <!-- ANPET -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#anpet">
+              <span class="material-icons me-2">train</span>
+              <span class="flex-grow-1">ANPET 40</span>
+            </button>
+          </h2>
+          <div id="anpet" class="accordion-collapse collapse" data-bs-parent="#accEventos">
+            <div class="accordion-body">
+              <p class="mb-3">Elaboração de quatro trabalhos para submissão no 40º Congresso da ANPET: (1) Trabalho derivado do subcapítulo 1 da NT03; (2) Trabalho derivado do subcapítulo 2 da NT03; (3) Trabalho derivado do BT02; (4) Trabalho derivado do Bootcamp do STSV.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Sim</span>
+                <span class="tag-item badge-ongoing"><span class="material-icons">autorenew</span> Status: Em andamento</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV e SEP</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/03%20Eventos/03.05%20ANPET%2040?csf=1&web=1&e=f39rep" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta com os trabalhos
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Iniciar trabalho 4</li>
+                    <li>Finalizar trabalho 3</li>
+                    <li>Revisar trabalho 2</li>
+                    <li>Encaminhar todos os trabalhos</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Alta gestão pode identificar que o Trabalho 1 traz um risco de imagem para o Infosiga por evidenciar deficiências na captação de óbitos.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Outros -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#outrosEventos">
+              <span class="material-icons me-2">skip_next</span>
+              <span class="flex-grow-1">Outros</span>
+            </button>
+          </h2>
+          <div id="outrosEventos" class="accordion-collapse collapse" data-bs-parent="#accEventos">
+            <div class="accordion-body">
+              <p class="mb-3">Outros dois trabalhos já foram cogitados mas foi decidido que não haveria tempo hábil para finalizar versões com a qualidade desejada a tempo de aprová-los e submetê-los para a ANPET. Esses trabalhos se beneficiariam tanto do tempo a mais para elaboração como também de formatos de artigos maiores. Temas: trabalho derivado do subcapítulo 4 da NT03 e trabalho derivado do Bootcamp do SEP.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Não</span>
+                <span class="tag-item badge-paused"><span class="material-icons">pause_circle</span> Status: Pausado</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV e SEP</span>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Solicitar a elaboração do trabalho 1 para STSV</li>
+                    <li>Solicitar melhorias do trabalho 2 para SEP</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Não há riscos identificados</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /accordion eventos -->
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         MISCELLANEOUS
+    ════════════════════════════════════════ -->
+    <section id="misc" class="mb-5">
+      <h2 class="section-title d-flex align-items-center gap-2">
+        <span class="material-icons">category</span> Miscellaneous
+      </h2>
+      <p class="mb-4">Outras produções da DESEG.</p>
+
+      <div class="accordion" id="accMisc">
+
+        <!-- Anuário -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#anuario">
+              <span class="material-icons me-2"> book </span>
+              <span class="flex-grow-1">Anuário Estatístico do Infosiga 2025</span>
+            </button>
+          </h2>
+          <div id="anuario" class="accordion-collapse collapse" data-bs-parent="#accMisc">
+            <div class="accordion-body">
+              <p class="mb-3">Primeira edição do Anuário Estatístico do Infosiga, cujo objetivo é explorar diferentes possibilidades de análise de dados oferecidas pelo sistema, demonstrando como diferentes cruzamentos podem revelar padrões relevantes para políticas públicas.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Sim</span>
+                <span class="tag-item badge-exec"><span class="material-icons">check_circle</span> Status: Finalizado</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV e SEP</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.04%20Infosiga.SP/02.04.03%20Anu%C3%A1rio?csf=1&web=1&e=LzBZIC" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Distribuição dos anuários físicos conforme diretriz a ser alinhada com a DSV</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Não há riscos identificados</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apoio DFT -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#apoioDFT">
+              <span class="material-icons me-2">shield</span>
+              <span class="flex-grow-1">Apoio para DFT</span>
+            </button>
+          </h2>
+          <div id="apoioDFT" class="accordion-collapse collapse" data-bs-parent="#accMisc">
+            <div class="accordion-body">
+              <p class="mb-3">O apoio da DESEG para a DFT ocorre de duas formas: (1) do auxílio semestral para distribuir as operações de fiscalização entre superintendências e municípios – já realizado para o segundo semestre de 2026; (2) do fornecimento do material (Atlas e Mapa Dinâmico) para encaminhamento para as superintendências planejarem suas operações.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Sim</span>
+                <span class="tag-item badge-exec"><span class="material-icons">check_circle</span> Status: Finalizado</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: SEP</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.07%20Fiscaliza%C3%A7%C3%A3o/02.07.08%20Distribui%C3%A7%C3%A3o%20de%20opera%C3%A7%C3%B5es%202026?csf=1&web=1&e=RzpKs0" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta da distribuição semestral
+                  </a>
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/02%20Produ%C3%A7%C3%A3o/02.07%20Fiscaliza%C3%A7%C3%A3o/02.07.06%20Entregas%20mensais?csf=1&web=1&e=Qb0ZLY" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta das entregas mensais
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Caso haja demanda da DFT, preparar o material para encaminhamento para as superintendências</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Falta de retorno da DFT e superintendências sobre o material produzido</li>
+                    <li>Irregularidade temporal na solicitação do material</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detran 360 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#detran360">
+              <span class="material-icons me-2">check_circle</span>
+              <span class="flex-grow-1">Detran 360 – Revisão dos subprocessos</span>
+            </button>
+          </h2>
+          <div id="detran360" class="accordion-collapse collapse" data-bs-parent="#accMisc">
+            <div class="accordion-body">
+              <p class="mb-3">Os subprocessos dos processos 1.2.1, 1.3.1 e 1.3.2 foram elaborados pela DESEG com apoio da COST, cabendo a ela apoiar a AEGE no projeto Detran 360. Uma primeira etapa já foi realizada no primeiro semestre, mas há indícios que haverá outras nos próximos meses.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Não</span>
+                <span class="tag-item badge-notstart"><span class="material-icons">hourglass_empty</span> Status: Não iniciado</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: -</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:f:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/00%20Administrativo/00.02%20Subprocessos/Detran%20360?csf=1&web=1&e=2qRaoA" target="_blank" class="doc-link">
+                    <span class="material-icons">folder</span> Pasta do projeto
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>No aguardo de novas informações da AEGE sobre próximas etapas</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Necessidade de negociar prazos factíveis com a AEGE</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /accordion misc -->
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         BACKLOG
+    ════════════════════════════════════════ -->
+    <section id="backlog" class="mb-5">
+      <h2 class="section-title d-flex align-items-center gap-2">
+        <span class="material-icons">pending_actions</span> Backlog
+      </h2>
+      <p class="mb-4">Atividades que ainda não foram iniciadas.</p>
+
+      <div class="accordion" id="accBacklog">
+
+        <!-- BT 04 e 05 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#bt0405">
+              <span class="material-icons me-2">campaign</span>
+              <span class="flex-grow-1">Boletins Técnicos 04 e 05</span>
+            </button>
+          </h2>
+          <div id="bt0405" class="accordion-collapse collapse" data-bs-parent="#accBacklog">
+            <div class="accordion-body">
+              <p class="mb-3">Fazer canvas de projeto, alinhar com a Diretoria e elaborar conteúdo para os temas sugeridos pela DSV: BT04 – Imprensa e segurança viária; BT05 – Como medir o efeito das abordagens educativas na segurança viária.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Não</span>
+                <span class="tag-item badge-backlog"><span class="material-icons">inbox</span> Status: Backlog</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV e SEP</span>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Elaborar os canvas de projeto para cada BT</li>
+                    <li>Alinhar canvas com COST, CGSV e DSV – possivelmente com ASCOM e BIGRS para o BT04 e EPT e CET para o BT05.</li>
+                    <li>Elaborar o conteúdo</li>
+                    <li>Aguardar volta da DESEG para diagramação</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Não há riscos identificados</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NT04 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#nt04">
+              <span class="material-icons me-2">location_city</span>
+              <span class="flex-grow-1">Nota Técnica 04</span>
+            </button>
+          </h2>
+          <div id="nt04" class="accordion-collapse collapse" data-bs-parent="#accBacklog">
+            <div class="accordion-body">
+              <p class="mb-3">Possível oportunidade para realizar uma análise aprofundada a respeito dos dados do Diagnóstico de Segurança Viária dos Municípios Paulistas.</p>
+
+              <div class="tags-row">
+                <span class="tag-item"><span class="material-icons">credit_card</span> Card no Painel: Não</span>
+                <span class="tag-item badge-backlog"><span class="material-icons">inbox</span> Status: Backlog</span>
+                <span class="tag-item"><span class="material-icons">build</span> Serviços: STSV e SEP</span>
+              </div>
+
+              <div class="mb-3">
+                <p class="lbl mb-2">Links</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="https://governosp.sharepoint.com/:p:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/00%20Administrativo/00.04%20Layouts/DSEG_CanvasPesquisas_v2.0.pptx?d=wf18cf55e5f6d479e9ee60ee80a65224e&csf=1&web=1&e=QR0N8E" target="_blank" class="doc-link">
+                    <span class="material-icons">slideshow</span> Canvas de pesquisa proposto para ONSV (PPT)
+                  </a>
+                  <a href="https://governosp.sharepoint.com/:b:/r/teams/DETRAN-CoordenadoriadeSeguranaViria/Shared%20Documents/DSV-CGSV%20-%20COST%20-%20DSEG/01%20Conv%C3%AAnios%20e%20parcerias/01.05%20ONSV/DESEG_ONSV_Canvas_Pesquisa_v02.pdf?csf=1&web=1&e=Fs9Bsl" target="_blank" class="doc-link">
+                    <span class="material-icons">picture_as_pdf</span> Canvas de pesquisa proposto para ONSV (PDF)
+                  </a>
+                </div>
+              </div>
+
+              <div class="two-col-bullets">
+                <div class="bullet-col">
+                  <p class="bullet-col-title">Próximos passos</p>
+                  <ul>
+                    <li>Retomar canvas de pesquisa proposto para o ONSV</li>
+                    <li>Identificar qual seria o escopo de uma análise da COST – decidindo se ainda integrará o ACT do ONSV</li>
+                    <li>Alinhar escopo com a DSV</li>
+                    <li>Iniciar produção</li>
+                  </ul>
+                </div>
+                <div class="bullet-col bullet-col-risk">
+                  <p class="bullet-col-title">Riscos</p>
+                  <ul>
+                    <li>Fragilidade dos dados</li>
+                    <li>Alinhamento com a CIST devido à posse dos dados</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /accordion backlog -->
+    </section>
+
+  </main>
+  </div><!-- /main-column -->
+
+  <!-- ── FOOTER ── -->
+  <footer class="text-center py-3 small text-muted d-md-none">
+    Divisão de Estudos para Segurança no Trânsito &middot; COST &middot; Detran-SP
+  </footer>
+
+</div><!-- /layout-wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Highlight active sidebar link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar .nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
